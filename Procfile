@@ -1,1 +1,1 @@
-web: gunicorn enviro_ai_v3:server
+web: gunicorn generate_poster:server
