@@ -8,7 +8,8 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
 OUTPUT_FILE = "enviro_poster.html"
-SERVER_PORT = int(os.environ.get("PORT", 5500))  # Railway injects PORT
+# تم تعديل المنفذ الافتراضي إلى 8050 ليتطابق مع طلبك
+SERVER_PORT = int(os.environ.get("PORT", 8050))  
 
 UNI_LOGO = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIbGNtcwIQAABtbnRyUkdCIFhZWiAH4gADABQACQAOAB1hY3NwTVNGVAAAAABzYXdzY3RybAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWhhbmSdkQA9QICwPUB0LIGepSKOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAAF9jcHJ0AAABDAAAAAx3dHB0AAABGAAAABRyWFlaAAABLAAAABRnWFlaAAABQAAAABRiWFlaAAABVAAAABRyVFJDAAABaAAAAGBnVFJDAAABaAAAAGBiVFJDAAABaAAAAGBkZXNjAAAAAAAAAAV1UkdCAAAAAAAAAAAAAAAAdGV4dAAAAABDQzAAWFlaIAAAAAAAAPNUAAEAAAABFslYWVogAAAAAAAAb6AAADjyAAADj1hZWiAAAAAAAABilgAAt4kAABjaWFlaIAAAAAAAACSgAAAPhQAAtsRjdXJ2AAAAAAAAACoAA..."
 
@@ -41,7 +42,6 @@ def build_html(active_config=None):
     if not active_config:
         active_config = PAST_POSTERS[-1]
 
-    # Quick helper to safely display empty strings or convert newlines
     def clean(k):
         return active_config.get(k, "").replace("\n", "<br>")
 
@@ -55,17 +55,17 @@ def build_html(active_config=None):
         :root {{
             --bg-gradient-start: #eef5f0;
             --bg-gradient-end: #dcece2;
-            --primary-color: #1e4620; /* Deep Forest Green */
-            --secondary-color: #2e6f40; /* Vibrant Leaf Green */
-            --accent-color: #8fa89b; /* Muted Sage Green */
+            --primary-color: #1e4620; 
+            --secondary-color: #2e6f40; 
+            --accent-color: #8fa89b; 
             --text-dark: #1b2e24;
             --card-bg: #ffffff;
             
-            /* Severity Colors */
-            --severity-low: #2ecc71;      /* Green - Safe */
-            --severity-moderate: #f1c40f; /* Yellow - Moderate */
-            --severity-high: #e67e22;     /* Orange - High Risk */
-            --severity-critical: #e74c3c; /* Red - Critical */
+            /* ألوان درجات الخطورة البيئية المعتمَدة */
+            --severity-low: #2ecc71;      /* أخضر - آمن */
+            --severity-moderate: #f1c40f; /* أصفر - متوسط */
+            --severity-high: #e67e22;     /* برتقالي - خطر مرتفع */
+            --severity-critical: #e74c3c; /* أحمر - خطر حرج */
         }}
 
         * {{
@@ -161,7 +161,6 @@ def build_html(active_config=None):
             }}
         }}
 
-        /* Panel Form Settings */
         .panel {{
             background: var(--card-bg);
             border-radius: 16px;
@@ -226,7 +225,6 @@ def build_html(active_config=None):
             background: var(--secondary-color);
         }}
 
-        /* Poster Preview Styling */
         .poster-preview {{
             background: white;
             border-radius: 16px;
@@ -264,7 +262,6 @@ def build_html(active_config=None):
             font-style: italic;
         }}
 
-        /* Severity Guide Section */
         .severity-legend {{
             background: #f4f9f6;
             border-radius: 10px;
@@ -303,7 +300,6 @@ def build_html(active_config=None):
         .scale-high {{ background-color: var(--severity-high); }}
         .scale-crit {{ background-color: var(--severity-critical); }}
 
-        /* Poster Grid Content */
         .poster-grid {{
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -518,8 +514,7 @@ class Handler(BaseHTTPRequestHandler):
             post_data = self.rfile.read(content_length).decode('utf-8')
             qs = parse_qs(post_data)
             
-            # Map POST parameters into a new poster configuration dictionary
-            config = {{
+            config = {
                 "id": len(PAST_POSTERS) + 1,
                 "title": qs.get("title", [""])[0],
                 "authors": qs.get("authors", [""])[0],
@@ -530,7 +525,7 @@ class Handler(BaseHTTPRequestHandler):
                 "results": qs.get("results", [""])[0],
                 "conclusion": qs.get("conclusion", [""])[0],
                 "references": qs.get("references", [""])[0],
-            }}
+            }
             
             PAST_POSTERS.append(config)
             try:
@@ -539,12 +534,10 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as e:
                 print("Error saving config:", e)
 
-            # Regenerate output file statically
             updated_html = build_html(config)
             with open(OUTPUT_FILE, "w", encoding="utf-8") as fh:
                 fh.write(updated_html)
 
-            # Redirect back to home page to see fresh visual updates instantly
             self.send_response(303)
             self.send_header("Location", "/")
             self.end_headers()
@@ -568,6 +561,7 @@ def main():
 
     server = HTTPServer(("0.0.0.0", SERVER_PORT), Handler)
     print(f"\n  Server running on port {SERVER_PORT}...")
+    print(f"  👉 Open browser at: http://localhost:{SERVER_PORT}")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
