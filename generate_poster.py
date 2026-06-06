@@ -8,7 +8,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
 OUTPUT_FILE = "enviro_poster.html"
-# تم تعديل المنفذ الافتراضي إلى 8050 ليتطابق مع طلبك
+# المنفذ مثبت على 8050 لفتح الرابط مباشرة عبر http://localhost:8050
 SERVER_PORT = int(os.environ.get("PORT", 8050))  
 
 UNI_LOGO = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIbGNtcwIQAABtbnRyUkdCIFhZWiAH4gADABQACQAOAB1hY3NwTVNGVAAAAABzYXdzY3RybAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWhhbmSdkQA9QICwPUB0LIGepSKOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAAF9jcHJ0AAABDAAAAAx3dHB0AAABGAAAABRyWFlaAAABLAAAABRnWFlaAAABQAAAABRiWFlaAAABVAAAABRyVFJDAAABaAAAAGBnVFJDAAABaAAAAGBiVFJDAAABaAAAAGBkZXNjAAAAAAAAAAV1UkdCAAAAAAAAAAAAAAAAdGV4dAAAAABDQzAAWFlaIAAAAAAAAPNUAAEAAAABFslYWVogAAAAAAAAb6AAADjyAAADj1hZWiAAAAAAAABilgAAt4kAABjaWFlaIAAAAAAAACSgAAAPhQAAtsRjdXJ2AAAAAAAAACoAA..."
@@ -53,19 +53,20 @@ def build_html(active_config=None):
     <title>EnviroAI Poster Generator</title>
     <style>
         :root {{
-            --bg-gradient-start: #eef5f0;
-            --bg-gradient-end: #dcece2;
-            --primary-color: #1e4620; 
-            --secondary-color: #2e6f40; 
-            --accent-color: #8fa89b; 
-            --text-dark: #1b2e24;
-            --card-bg: #ffffff;
+            /* تعديل الألوان حسب طلبك: خلفية بيضاء مع دمج الأحمر والأزرق والأخضر */
+            --bg-main: #ffffff;
+            --primary-blue: #0056b3;   /* الأزرق المعتمد للروابط والعناصر الرئيسية */
+            --primary-red: #d9534f;    /* الأحمر */
+            --primary-green: #28a745;  /* الأخضر */
+            --text-dark: #212529;
+            --border-color: #dee2e6;
+            --card-bg: #f8f9fa;
             
-            /* ألوان درجات الخطورة البيئية المعتمَدة */
-            --severity-low: #2ecc71;      /* أخضر - آمن */
-            --severity-moderate: #f1c40f; /* أصفر - متوسط */
-            --severity-high: #e67e22;     /* برتقالي - خطر مرتفع */
-            --severity-critical: #e74c3c; /* أحمر - خطر حرج */
+            /* ألوان درجات الخطورة البيئية */
+            --severity-low: #28a745;      /* أخضر */
+            --severity-moderate: #ffc107; /* أصفر */
+            --severity-high: #fd7e14;     /* برتقالي */
+            --severity-critical: #dc3545; /* أحمر */
         }}
 
         * {{
@@ -76,7 +77,7 @@ def build_html(active_config=None):
 
         body {{
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            background-color: var(--bg-main);
             color: var(--text-dark);
             min-height: 100vh;
             padding: 20px;
@@ -87,12 +88,13 @@ def build_html(active_config=None):
             margin: 0 auto 25px auto;
             background: var(--card-bg);
             padding: 20px 30px;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(30, 70, 32, 0.08);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-left: 6px solid var(--primary-color);
+            border-top: 4px solid var(--primary-blue);
+            border-bottom: 2px solid var(--primary-red);
         }}
 
         .header-logo-title {{
@@ -105,38 +107,36 @@ def build_html(active_config=None):
             height: 70px;
             width: auto;
             object-fit: contain;
-            border-radius: 8px;
+            border-radius: 4px;
         }}
 
         .header-text h1 {{
             font-size: 24px;
-            color: var(--primary-color);
+            color: var(--primary-blue);
             font-weight: 700;
         }}
 
         .header-text p {{
             font-size: 14px;
-            color: #556b5c;
+            color: #6c757d;
             margin-top: 4px;
         }}
 
         .visit-btn {{
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
             color: white;
             text-decoration: none;
             padding: 12px 24px;
-            border-radius: 30px;
+            border-radius: 4px;
             font-weight: 600;
             font-size: 14px;
-            box-shadow: 0 4px 12px rgba(46, 111, 64, 0.2);
             transition: all 0.3s ease;
             white-space: nowrap;
         }}
 
         .visit-btn:hover {{
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(46, 111, 64, 0.3);
-            opacity: 0.95;
+            background: var(--primary-red);
+            opacity: 0.9;
         }}
 
         .main-container {{
@@ -163,18 +163,17 @@ def build_html(active_config=None):
 
         .panel {{
             background: var(--card-bg);
-            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             padding: 25px;
-            box-shadow: 0 8px 24px rgba(30, 70, 32, 0.06);
-            height: fit-content;
         }}
 
         .panel h2 {{
-            color: var(--primary-color);
+            color: var(--primary-blue);
             font-size: 18px;
             margin-bottom: 20px;
             padding-bottom: 8px;
-            border-bottom: 2px solid #e1ebe5;
+            border-bottom: 2px solid var(--border-color);
         }}
 
         .form-group {{
@@ -185,65 +184,61 @@ def build_html(active_config=None):
             display: block;
             font-size: 13px;
             font-weight: 600;
-            color: #44584c;
+            color: #495057;
             margin-bottom: 6px;
         }}
 
         .form-group input, .form-group textarea {{
             width: 100%;
             padding: 10px 14px;
-            border: 1.5px solid #cedcd3;
-            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
             font-family: inherit;
             font-size: 14px;
             color: var(--text-dark);
-            background-color: #fafdfb;
-            transition: border-color 0.2s;
+            background-color: #ffffff;
         }}
 
         .form-group input:focus, .form-group textarea:focus {{
             outline: none;
-            border-color: var(--secondary-color);
-            background-color: #fff;
+            border-color: var(--primary-blue);
         }}
 
         .submit-btn {{
             width: 100%;
-            background: var(--primary-color);
+            background: var(--primary-blue);
             color: white;
             border: none;
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 4px;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.2s;
-            margin-top: 10px;
         }}
 
         .submit-btn:hover {{
-            background: var(--secondary-color);
+            background: var(--primary-red);
         }}
 
         .poster-preview {{
-            background: white;
-            border-radius: 16px;
+            background: #ffffff;
+            border-radius: 8px;
             padding: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            border: 1px solid #e2ece5;
+            border: 2px solid var(--border-color);
             position: relative;
         }}
 
         .poster-header {{
             text-align: center;
-            border-bottom: 3px solid var(--primary-color);
+            border-bottom: 3px solid var(--primary-red);
             padding-bottom: 20px;
             margin-bottom: 25px;
         }}
 
         .poster-title {{
             font-size: 28px;
-            color: var(--primary-color);
+            color: var(--primary-blue);
             font-weight: 800;
             line-height: 1.3;
             margin-bottom: 10px;
@@ -251,32 +246,31 @@ def build_html(active_config=None):
 
         .poster-authors {{
             font-size: 16px;
-            color: var(--secondary-color);
+            color: var(--primary-green);
             font-weight: 600;
             margin-bottom: 4px;
         }}
 
         .poster-dept {{
             font-size: 13px;
-            color: #667e6f;
+            color: #6c757d;
             font-style: italic;
         }}
 
         .severity-legend {{
-            background: #f4f9f6;
-            border-radius: 10px;
+            background: var(--card-bg);
+            border-radius: 4px;
             padding: 15px;
             margin-bottom: 25px;
-            border: 1px solid #e1ebe5;
+            border: 1px solid var(--border-color);
         }}
 
         .severity-legend-title {{
             font-size: 13px;
             font-weight: 700;
-            color: var(--primary-color);
+            color: var(--text-dark);
             margin-bottom: 10px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
             text-align: center;
         }}
 
@@ -289,11 +283,10 @@ def build_html(active_config=None):
 
         .scale-box {{
             padding: 8px 4px;
-            border-radius: 6px;
+            border-radius: 4px;
             color: white;
             font-size: 12px;
             font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }}
         .scale-low {{ background-color: var(--severity-low); }}
         .scale-mod {{ background-color: var(--severity-moderate); color: #333; }}
@@ -313,32 +306,25 @@ def build_html(active_config=None):
         }}
 
         .poster-section {{
-            background: #fdfefe;
-            border: 1px solid #ebf2ee;
-            border-radius: 8px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
             padding: 18px;
-            transition: transform 0.2s;
-        }}
-        
-        .poster-section:hover {{
-            transform: translateY(-2px);
-            border-color: var(--accent-color);
         }}
 
         .poster-section h3 {{
-            color: var(--primary-color);
+            color: var(--primary-blue);
             font-size: 15px;
             margin-bottom: 10px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-left: 3px solid var(--secondary-color);
+            border-left: 3px solid var(--primary-red);
             padding-left: 8px;
         }}
 
         .poster-section p {{
             font-size: 13.5px;
             line-height: 1.6;
-            color: #334439;
+            color: var(--text-dark);
             text-align: justify;
         }}
 
@@ -354,12 +340,12 @@ def build_html(active_config=None):
         .poster-footer {{
             margin-top: 30px;
             padding-top: 15px;
-            border-top: 1px solid #e1ebe5;
+            border-top: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 11px;
-            color: #8fa89b;
+            color: #6c757d;
         }}
     </style>
 </head>
