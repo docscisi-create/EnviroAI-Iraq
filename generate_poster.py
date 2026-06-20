@@ -45,9 +45,9 @@ def build_html():
 
     css = (
         "*{box-sizing:border-box;margin:0;padding:0;}"
-        "body{font-family:'Cairo',sans-serif;direction:rtl;background:#e8f5f0;min-height:100vh;padding:24px 16px;}"
+        "body{font-family:'Cairo',sans-serif;direction:rtl;background:#e8f5f0;min-height:100vh;padding:58px 16px 24px;}"
         ".poster{max-width:960px;margin:0 auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(15,110,86,0.13);}"
-        ".hdr{background:linear-gradient(135deg,#0F6E56 0%,#1D9E75 45%,#22c995 100%);padding:20px 24px 18px;position:relative;overflow:hidden;}"
+        ".hdr{background:linear-gradient(135deg,#0F6E56 0%,#1D9E75 45%,#22c995 100%);padding:52px 24px 22px;position:relative;overflow:hidden;}"
         ".hdr::before{content:'';position:absolute;top:-40px;left:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.06);}"
         ".hdr::after{content:'';position:absolute;bottom:-60px;right:-30px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,0.05);}"
         ".hdr h1{font-size:16px;font-weight:700;color:white;line-height:1.6;text-align:center;position:relative;z-index:1;}"
@@ -150,7 +150,7 @@ def build_html():
         '<div class="poster">\n'
 
         # ── LANG SWITCHER + HEADER ──
-        '<div id="langBar" style="position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;gap:0;border-radius:24px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,.22);border:2px solid rgba(255,255,255,.4);">'
+        '<div id="langBar" style="position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;gap:0;border-radius:24px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,.22);border:2px solid #ccc;background:#fff;">'
         '<button id="btnAr" onclick="setLang(\'ar\')" style="padding:9px 28px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:#0F6E56;color:white;font-family:Cairo,sans-serif;">\u0627\u0644\u0639\u0631\u0628\u064a\u0629</button>'
         '<button id="btnEn" onclick="setLang(\'en\')" style="padding:9px 28px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:rgba(255,255,255,.92);color:#0F6E56;font-family:Inter,sans-serif;">English</button>'
         '</div>\n'
